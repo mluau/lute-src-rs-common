@@ -10,7 +10,7 @@ pub fn build_prebuilt_default(lcfg: LConfig) {
         current_dir
     );
 
-    let static_libs_path = format!("{}/prebuilts-git-build/prebuilts/{}/build/staticlibs", current_dir, target);
+    let static_libs_path = format!("{}/prebuilts/{}/build/staticlibs", current_dir, target);
     println!("Static libs path: {}", static_libs_path);
     let slp = std::path::Path::new(&static_libs_path);
     if !slp.exists() {
