@@ -1,6 +1,10 @@
+// cc
+#[cfg(feature = "full")]
 pub mod cmake;
-pub mod finalize;
+#[cfg(feature = "full")]
 pub mod commonflags;
+
+pub mod finalize;
 
 /// The list of configurable flags
 #[derive(Clone, Copy)]
