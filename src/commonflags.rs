@@ -39,8 +39,10 @@ pub fn setup_lute_cmake(lcfg: LConfig) -> std::path::PathBuf {
         .build()
 }
 
-pub fn build_cc_lute_lib(lib_name: &str, files: Vec<String>) {
-    cc::Build::new()
+pub fn build_cc_lute_lib(lcfg: LConfig, lib_name: &str, files: Vec<String>) {
+    let mut build = cc::Build::new();
+
+    build
         .cpp(true)
 	    .std("c++20")
         .files(files)
@@ -58,6 +60,16 @@ pub fn build_cc_lute_lib(lib_name: &str, files: Vec<String>) {
         .include("lute/extern/luau/VM/src")
         .include("lute/extern/luau/Common/include")
         .include("lute/extern/luau/Compiler/include")
-        .static_crt(true)
+        .static_crt(true);
+
+    if lcfg.disable_net {
+        build.flag("-DLUTE_DISABLE_NET=1");
+    }
+
+    if lcfg.disable_crypto {
+        build.flag("-DLUTE_DISABLE_CRYPTO=1");
+    }
+
+    build
         .compile(lib_name);
 }
