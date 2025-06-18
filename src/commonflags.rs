@@ -1,0 +1,63 @@
+use crate::{LConfig, cmake::Config};
+
+pub fn setup_lute_cmake(lcfg: LConfig) -> std::path::PathBuf {
+    let mut config = cc::Build::new();
+
+    let target = std::env::var("TARGET").unwrap();
+
+    if target.ends_with("emscripten") {
+        // Enable c++ exceptions for emscripten (it's disabled by default)
+        // Later we should switch to wasm exceptions
+        config.flag_if_supported("-fexceptions");
+    }
+
+    config
+        .warnings(false)
+        .cargo_metadata(true)
+        .std("c++20")
+        .cpp(true)
+        .static_crt(true);
+
+    Config::new("lute")
+        .profile("Release") // Debug builds tend to be extremely slow and nearly unusable in practice
+        .define("LUAU_EXTERN_C", "ON") // Provides DLUA_USE_LONGJMP, DLUA_API, LUACODE_API, LUACODEGEN_API
+        .define("LUAU_STATIC_CRT", "ON")
+        .define("CMAKE_MSVC_RUNTIME_LIBRARY", "MultiThreaded$<$<CONFIG:Debug>:Debug>") // Use static CRT for MSVC
+        .define("LUAU_BUILD_STATIC", "ON")
+        .define("LUTE_DISABLE_NET", if lcfg.disable_net { "ON" } else { "OFF" } )
+        .define("LUTE_DISABLE_CRYPTO", if lcfg.disable_crypto { "ON" } else { "OFF" }  )
+        .cxxflag("-DLUAI_MAXCSTACK=1000000")
+        .cxxflag("-DLUA_UTAG_LIMIT=128")
+        .cxxflag("-DLUA_LUTAG_LIMIT=128") 
+        .cxxflag("-DLUA_USE_LONGJMP=1") // Use longjmp for error handling
+        .cxxflag(
+            "-fexceptions" // Enable C++ exceptions on non-Windows
+        )
+        .init_cxx_cfg(config)
+        .no_build_target(true)
+        .static_crt(true)
+        .build()
+}
+
+pub fn build_cc_lute_lib(lib_name: &str, files: Vec<String>) {
+    cc::Build::new()
+        .cpp(true)
+	    .std("c++20")
+        .files(files)
+        .flag("-DLUA_USE_LONGJMP=1")
+        .flag("-DLUA_API=extern \"C\"")
+        .flag("-DLUACODE_API=extern \"C\"")
+        .flag("-DLUACODEGEN_API=extern \"C\"")
+        .flag("-DLUAI_MAXCSTACK=1000000")
+        .flag("-DLUA_UTAG_LIMIT=128") 
+        .flag("-DLUA_LUTAG_LIMIT=128") 
+        .flag_if_supported(
+            "-fexceptions" // Enable C++ exceptions on non-Windows
+        )
+        .include("lute/extern/luau/VM/include")
+        .include("lute/extern/luau/VM/src")
+        .include("lute/extern/luau/Common/include")
+        .include("lute/extern/luau/Compiler/include")
+        .static_crt(true)
+        .compile(lib_name);
+}

@@ -1,5 +1,6 @@
 pub mod cmake;
 pub mod finalize;
+pub mod commonflags;
 
 /// The list of configurable flags
 #[derive(Clone, Copy)]
