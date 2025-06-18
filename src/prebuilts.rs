@@ -1,10 +1,14 @@
 use crate::{LConfig, finalize::finalize_build};
-use std::env::current_dir;
 
 /// Default build script for prebuilt binaries
 pub fn build_prebuilt_default(lcfg: LConfig) {    
-    let current_dir = current_dir().unwrap().display().to_string();
+    let current_dir = std::env::current_dir().unwrap().display().to_string();
     let target = std::env::var("TARGET").unwrap();
+
+    println!(
+        "Current directory: {}",
+        current_dir
+    );
 
     let static_libs_path = format!("{}/prebuilts-git-build/prebuilts/{}/build/staticlibs", current_dir, target);
     println!("Static libs path: {}", static_libs_path);
