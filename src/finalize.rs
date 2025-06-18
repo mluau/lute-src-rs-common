@@ -83,6 +83,25 @@ pub fn finalize_build(lcfg: LConfig, prebuilt: bool) {
         println!("cargo:rustc-link-lib=static=z"); 
     }
 
+    // On android, clang_rt.builtins is needed
+    if cfg!(target_os = "android") {
+        let target = std::env::var("TARGET").unwrap();
+        let target_arch_for_compiler_rt = if target.starts_with("aarch64") {
+            "aarch64"
+        } else if target.starts_with("armv7") {
+            "arm"
+        } else if target.starts_with("i686") {
+            "i386"
+        } else if target.starts_with("x86_64") {
+            "x86_64"
+        } else {
+            panic!("Unsupported Android target architecture: {}", target);
+        };
+
+        // This is the correct and direct solution
+        println!("cargo:rustc-link-lib=static=clang_rt.builtins-{}-android", target_arch_for_compiler_rt);
+    }
+
     if prebuilt {
         // Configure C++ here (todo: determine if its useful for non-prebuilt as well) 
         if let Some(ref cpp_stdlib) = get_cpp_link_stdlib(&std::env::var("TARGET").unwrap(), &std::env::var("HOST").unwrap()) {
