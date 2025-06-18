@@ -42,6 +42,56 @@ pub fn setup_lute_cmake(lcfg: LConfig) -> std::path::PathBuf {
 pub fn build_cc_lute_lib(lcfg: LConfig, lib_name: &str, files: Vec<String>) {
     let mut build = cc::Build::new();
 
+    /*
+    let mut build = cc::Build::new();
+
+    build
+        .host(&host)
+        .target(&target)
+        .cpp(true)
+	    .std("c++20")
+        .file("LuteExt/src/lopen.cpp")
+        .include("lute/lute/cli/include")
+        .include("lute/lute/crypto/include")
+        .include("lute/lute/fs/include")
+        .include("lute/lute/luau/include")
+        .include("lute/lute/net/include")
+        .include("lute/lute/process/include")
+        .include("lute/lute/system/include")
+        .include("lute/lute/vm/include")
+        .include("lute/lute/task/include")
+        .include("lute/lute/time/include")
+        .include("lute/lute/runtime/include")
+        .include("lute/extern/luau/VM/include")
+        .include("lute/extern/luau/VM/src")
+        .include("lute/extern/luau/Common/include")
+        .include("lute/extern/luau/Compiler/include")
+        .include("lute/extern/libuv/include")
+        .flag("-DLUA_USE_LONGJMP=1")
+        .flag("-DLUA_API=extern \"C\"")
+        .flag("-DLUACODE_API=extern \"C\"")
+        .flag("-DLUACODEGEN_API=extern \"C\"")
+        .flag("-DLUAI_MAXCSTACK=1000000")
+        .flag("-DLUA_UTAG_LIMIT=128")
+        .flag("-DLUA_LUTAG_LIMIT=128")
+        .flag_if_supported(
+            "-fexceptions" // Enable C++ exceptions on non-Windows
+        ); 
+        
+    if lcfg.disable_net {
+        build.flag("-DLUTE_DISABLE_NET=1");
+    }
+
+    if lcfg.disable_crypto {
+        build.flag("-DLUTE_DISABLE_CRYPTO=1");
+    }
+
+    build
+        .static_crt(true)
+        .out_dir(&prebuilts_dir)
+        .compile("Luau.LuteExt");
+    */
+
     build
         .cpp(true)
 	    .std("c++20")
@@ -56,10 +106,22 @@ pub fn build_cc_lute_lib(lcfg: LConfig, lib_name: &str, files: Vec<String>) {
         .flag_if_supported(
             "-fexceptions" // Enable C++ exceptions on non-Windows
         )
+        .include("lute/lute/cli/include")
+        .include("lute/lute/crypto/include")
+        .include("lute/lute/fs/include")
+        .include("lute/lute/luau/include")
+        .include("lute/lute/net/include")
+        .include("lute/lute/process/include")
+        .include("lute/lute/system/include")
+        .include("lute/lute/vm/include")
+        .include("lute/lute/task/include")
+        .include("lute/lute/time/include")
+        .include("lute/lute/runtime/include")
         .include("lute/extern/luau/VM/include")
         .include("lute/extern/luau/VM/src")
         .include("lute/extern/luau/Common/include")
         .include("lute/extern/luau/Compiler/include")
+        .include("lute/extern/libuv/include")
         .static_crt(true);
 
     if lcfg.disable_net {
