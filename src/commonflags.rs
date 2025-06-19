@@ -30,7 +30,7 @@ pub fn setup_lute_cmake(lcfg: LConfig, is_prebuilt: bool) -> std::path::PathBuf 
         .profile("Release") // Debug builds tend to be extremely slow and nearly unusable in practice
         .define("LUAU_EXTERN_C", "ON") // Provides DLUA_USE_LONGJMP, DLUA_API, LUACODE_API, LUACODEGEN_API
         .define("LUAU_STATIC_CRT", if static_crt { "ON" } else { "OFF" }) 
-        .define("CMAKE_MSVC_RUNTIME_LIBRARY", "MultiThreaded$<$<CONFIG:Debug>:Debug>") // Use static CRT for MSVC
+        //.define("CMAKE_MSVC_RUNTIME_LIBRARY", "MultiThreaded$<$<CONFIG:Debug>:Debug>") // Use static CRT for MSVC
         .define("LUAU_BUILD_STATIC", "ON")
         .define("LUTE_DISABLE_NET", if lcfg.disable_net { "ON" } else { "OFF" } )
         .define("LUTE_DISABLE_CRYPTO", if lcfg.disable_crypto { "ON" } else { "OFF" }  )
