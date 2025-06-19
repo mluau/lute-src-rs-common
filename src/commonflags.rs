@@ -1,6 +1,14 @@
 use crate::{LConfig, cmake::Config};
 
-pub fn setup_lute_cmake(lcfg: LConfig) -> std::path::PathBuf {
+pub fn setup_lute_cmake(lcfg: LConfig, is_prebuilt: bool) -> std::path::PathBuf {
+    let static_crt = if is_prebuilt {
+        // Prebuilt lute runtime uses dynamic CRT
+        false
+    } else {
+        // Build lute runtime from source, use static CRT
+        true
+    }
+
     let mut config = cc::Build::new();
 
     let target = std::env::var("TARGET").unwrap();
@@ -16,12 +24,12 @@ pub fn setup_lute_cmake(lcfg: LConfig) -> std::path::PathBuf {
         .cargo_metadata(true)
         .std("c++20")
         .cpp(true)
-        .static_crt(false);
+        .static_crt(static_crt);
 
     Config::new("lute")
         .profile("Release") // Debug builds tend to be extremely slow and nearly unusable in practice
         .define("LUAU_EXTERN_C", "ON") // Provides DLUA_USE_LONGJMP, DLUA_API, LUACODE_API, LUACODEGEN_API
-        .define("LUAU_STATIC_CRT", "OFF")
+        .define("LUAU_STATIC_CRT", if static_crt { "ON" } else { "OFF" }) 
         .define("CMAKE_MSVC_RUNTIME_LIBRARY", "MultiThreaded$<$<CONFIG:Debug>:Debug>") // Use static CRT for MSVC
         .define("LUAU_BUILD_STATIC", "ON")
         .define("LUTE_DISABLE_NET", if lcfg.disable_net { "ON" } else { "OFF" } )
@@ -36,11 +44,19 @@ pub fn setup_lute_cmake(lcfg: LConfig) -> std::path::PathBuf {
         )
         .init_cxx_cfg(config)
         .no_build_target(true)
-        .static_crt(false)
+        .static_crt(static_crt)
         .build()
 }
 
-pub fn build_cc_lute_lib(lcfg: LConfig, lib_name: &str, files: Vec<String>) {
+pub fn build_cc_lute_lib(lcfg: LConfig, lib_name: &str, files: Vec<String>, is_prebuilt: bool) {
+    let static_crt = if is_prebuilt {
+        // Prebuilt lute runtime uses dynamic CRT
+        false
+    } else {
+        // Build lute runtime from source, use static CRT
+        true
+    }
+
     let mut build = cc::Build::new();
 
     build
@@ -73,7 +89,7 @@ pub fn build_cc_lute_lib(lcfg: LConfig, lib_name: &str, files: Vec<String>) {
         .include("lute/extern/luau/Common/include")
         .include("lute/extern/luau/Compiler/include")
         .include("lute/extern/libuv/include")
-        .static_crt(false);
+        .static_crt(static_crt);
 
     if lcfg.disable_net {
         build.flag("-DLUTE_DISABLE_NET=1");
