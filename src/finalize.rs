@@ -7,6 +7,7 @@ use crate::LConfig;
 /// Prior to calling this, it is the job of the caller to set the linker 
 /// search path.
 pub fn finalize_build(lcfg: LConfig, prebuilt: bool) {
+    println!("cargo:rustc-env=LUAU_VERSION=0.678"); // TODO: Update when needed
     if prebuilt {
         // Link in Luau.LuteExt and Luau.Custom
         println!("cargo:rustc-link-lib=static=Luau.Custom");
