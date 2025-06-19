@@ -12,6 +12,7 @@ pub mod prebuilts;
 pub struct LConfig {
     pub disable_crypto: bool,
     pub disable_net: bool,
+    pub disable_native_codegen: bool,
 }
 
 impl Default for LConfig {
@@ -19,6 +20,7 @@ impl Default for LConfig {
         Self {
             disable_crypto: true, // Takes too long to build
             disable_net: true, // Takes too long to build
+            disable_native_codegen: true, // Limits portability when enabled, takes a bit to build
         }
     }
 }

@@ -17,7 +17,9 @@ pub fn finalize_build(lcfg: LConfig, prebuilt: bool) {
     println!("cargo:rustc-link-lib=static=Luau.Compiler");
     println!("cargo:rustc-link-lib=static=Luau.Analysis");
     println!("cargo:rustc-link-lib=static=Luau.Ast");
-    println!("cargo:rustc-link-lib=static=Luau.CodeGen");
+    if !lcfg.disable_native_codegen {
+        println!("cargo:rustc-link-lib=static=Luau.CodeGen");
+    }
     println!("cargo:rustc-link-lib=static=Luau.Config");
     println!("cargo:rustc-link-lib=static=Luau.EqSat");
     println!("cargo:rustc-link-lib=static=Luau.VM");

@@ -26,6 +26,7 @@ pub fn setup_lute_cmake(lcfg: LConfig) -> std::path::PathBuf {
         .define("LUAU_BUILD_STATIC", "ON")
         .define("LUTE_DISABLE_NET", if lcfg.disable_net { "ON" } else { "OFF" } )
         .define("LUTE_DISABLE_CRYPTO", if lcfg.disable_crypto { "ON" } else { "OFF" }  )
+        .define("LUTE_DISABLE_NATIVE_CODEGEN", if lcfg.disable_native_codegen { "ON" } else { "OFF" }  )
         .cxxflag("-DLUAI_MAXCSTACK=1000000")
         .cxxflag("-DLUA_UTAG_LIMIT=128")
         .cxxflag("-DLUA_LUTAG_LIMIT=128") 
@@ -130,6 +131,10 @@ pub fn build_cc_lute_lib(lcfg: LConfig, lib_name: &str, files: Vec<String>) {
 
     if lcfg.disable_crypto {
         build.flag("-DLUTE_DISABLE_CRYPTO=1");
+    }
+
+    if lcfg.disable_native_codegen {
+        build.flag("-DLUTE_DISABLE_NATIVE_CODEGEN=1");
     }
 
     build
