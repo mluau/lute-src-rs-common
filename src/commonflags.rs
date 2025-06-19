@@ -7,7 +7,7 @@ pub fn setup_lute_cmake(lcfg: LConfig, is_prebuilt: bool) -> std::path::PathBuf 
     } else {
         // Build lute runtime from source, use static CRT
         true
-    }
+    };
 
     let mut config = cc::Build::new();
 
@@ -55,7 +55,7 @@ pub fn build_cc_lute_lib(lcfg: LConfig, lib_name: &str, files: Vec<String>, is_p
     } else {
         // Build lute runtime from source, use static CRT
         true
-    }
+    };
 
     let mut build = cc::Build::new();
 
